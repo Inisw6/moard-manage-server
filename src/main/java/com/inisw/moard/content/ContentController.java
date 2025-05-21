@@ -1,4 +1,4 @@
 package com.inisw.moard.content;
 
-public class ContentsController {
+public class ContentController {
 }
