@@ -18,12 +18,12 @@ public class Content {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String title;
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String url;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private ContentType type;
     @Column(name = "image_url", columnDefinition = "text")
     private String imageUrl;
