@@ -1,4 +1,9 @@
 package com.inisw.moard.searchquery;
 
-public interface SearchQueryRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface SearchQueryRepository extends JpaRepository<SearchQuery, Long> {
+    Optional<SearchQuery> findByQuery(String query);
 }
