@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 public class NaverBlogClient {
     private static final DateTimeFormatter NAVER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    @Qualifier("naverWebClient")
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 

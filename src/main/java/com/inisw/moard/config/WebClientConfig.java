@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-    @Bean
+    @Bean(name = "naverWebClient")
     public WebClient naverWebClient(@Value("${naver.client.id}") String clientId,
                                     @Value("${naver.client.secret}") String clientSecret) {
         return WebClient.builder()
