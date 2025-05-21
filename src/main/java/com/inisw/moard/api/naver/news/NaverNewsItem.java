@@ -1,4 +1,4 @@
-package com.inisw.moard.api.naver;
+package com.inisw.moard.api.naver.news;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.inisw.moard.api.naver;
+package com.inisw.moard.api.naver.blog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inisw.moard.content.Content;
