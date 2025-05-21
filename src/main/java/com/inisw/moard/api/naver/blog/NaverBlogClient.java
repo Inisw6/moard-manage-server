@@ -3,7 +3,6 @@ package com.inisw.moard.api.naver.blog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class NaverBlogClient {
     private static final DateTimeFormatter NAVER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");

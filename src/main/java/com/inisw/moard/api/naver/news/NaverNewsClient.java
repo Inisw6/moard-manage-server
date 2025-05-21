@@ -3,7 +3,6 @@ package com.inisw.moard.api.naver.news;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class NaverNewsClient {
     private static final DateTimeFormatter NAVER_NEWS_DATE_FORMAT =
