@@ -19,9 +19,14 @@ public class NaverNewsClient {
     private static final DateTimeFormatter NAVER_NEWS_DATE_FORMAT =
             DateTimeFormatter.RFC_1123_DATE_TIME;
 
-    @Qualifier("naverWebClient")
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+
+    public NaverNewsClient(@Qualifier("naverWebClient") WebClient webClient,
+                           ObjectMapper objectMapper) {
+        this.webClient = webClient;
+        this.objectMapper = objectMapper;
+    }
 
     public List<Content> searchNews(String query, int display, int start, String sort) {
         String response = webClient.get()

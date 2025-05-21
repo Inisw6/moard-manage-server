@@ -18,9 +18,15 @@ import java.util.List;
 @Service
 public class NaverBlogClient {
     private static final DateTimeFormatter NAVER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
-    @Qualifier("naverWebClient")
+
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+
+    public NaverBlogClient(@Qualifier("naverWebClient") WebClient webClient,
+                           ObjectMapper objectMapper) {
+        this.webClient = webClient;
+        this.objectMapper = objectMapper;
+    }
 
     public List<Content> searchBlogs(String query, int display, int start, String sort) {
         String response = webClient.get()
