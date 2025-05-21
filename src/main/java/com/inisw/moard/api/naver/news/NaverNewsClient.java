@@ -53,6 +53,7 @@ public class NaverNewsClient {
     private Content toContent(NaverNewsItem item) {
         return Content.builder()
                 .title(item.getTitle())
+                .description(item.getDescription())
                 .url(item.getLink())
                 .type(ContentType.NEWS)
                 .publishedAt(ZonedDateTime.parse(item.getPubDate(), NAVER_NEWS_DATE_FORMAT).toLocalDateTime())

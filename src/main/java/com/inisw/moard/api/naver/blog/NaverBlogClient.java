@@ -53,6 +53,7 @@ public class NaverBlogClient {
     private Content toContent(NaverBlogItem item) {
         return Content.builder()
                 .title(item.getTitle())
+                .description(item.getDescription())
                 .url(item.getLink())
                 .type(ContentType.BLOG)
                 .publishedAt(parsePostDate(item.getPostdate()))

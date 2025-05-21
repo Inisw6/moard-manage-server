@@ -21,6 +21,8 @@ public class Content {
     @Column(columnDefinition = "text")
     private String title;
     @Column(columnDefinition = "text")
+    private String description;
+    @Column(columnDefinition = "text")
     private String url;
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "text")
