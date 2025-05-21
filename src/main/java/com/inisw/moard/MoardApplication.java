@@ -1,4 +1,4 @@
-package com.inisw;
+package com.inisw.moard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MoardApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MoardApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MoardApplication.class, args);
+    }
 
 }
