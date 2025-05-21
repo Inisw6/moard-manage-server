@@ -27,6 +27,7 @@ public class SearchQuery {
     private LocalDateTime searchedAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "searchQuery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     @JsonManagedReference
     private List<Content> contentList = new ArrayList<>();
 }
