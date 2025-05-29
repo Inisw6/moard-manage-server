@@ -36,7 +36,7 @@ public class Content {
 	private String title;
 	@Column(columnDefinition = "text")
 	private String description;
-	@Column(columnDefinition = "text")
+	@Column(columnDefinition = "text", unique = true)
 	private String url;
 	@Enumerated(EnumType.STRING)
 	@Column(columnDefinition = "text")
@@ -47,6 +47,9 @@ public class Content {
 	private String embedding;
 	@Column(name = "published_at")
 	private LocalDateTime publishedAt;
+	@Column
+	@Builder.Default
+	private LocalDateTime queryAt = LocalDateTime.now();
 
 	@ManyToOne
 	@JoinColumn(name = "search_query_id")
