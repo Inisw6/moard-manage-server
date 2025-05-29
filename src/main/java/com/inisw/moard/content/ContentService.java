@@ -2,6 +2,7 @@ package com.inisw.moard.content;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,6 +83,12 @@ public class ContentService {
 				result = searchQuery.getContentList();
 			}
 		}
+
+		result = result.stream()
+			.sorted(Comparator.comparing(Content::getQueryAt, Comparator.nullsLast(Comparator.reverseOrder())))
+			.limit(maxResults * 3)
+			.toList();
+
 		return result;
 	}
 }
