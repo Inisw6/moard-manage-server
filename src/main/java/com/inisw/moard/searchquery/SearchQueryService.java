@@ -1,9 +1,6 @@
-package com.inisw.moard.content.searchquery;
+package com.inisw.moard.searchquery;
 
 import org.springframework.stereotype.Service;
-
-import com.inisw.moard.content.Content;
-import com.inisw.moard.content.ContentType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +11,6 @@ public class SearchQueryService {
 
 	public SearchQuery createSearchQuery(String query) {
 		SearchQuery searchQuery = SearchQuery.builder().query(query).build();
-		searchQuery.getContentList().add(Content.builder().title("aaa").type(ContentType.YOUTUBE).build());
 		return searchQueryRepository.save(searchQuery);
 	}
 

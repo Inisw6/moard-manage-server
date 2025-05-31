@@ -1,4 +1,4 @@
-package com.inisw.moard.content.searchquery;
+package com.inisw.moard.searchquery;
 
 import java.util.Optional;
 
