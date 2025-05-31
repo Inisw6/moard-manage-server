@@ -1,9 +1,10 @@
 package com.inisw.moard.user.log;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inisw.moard.content.Content;
+import com.inisw.moard.recommendation.Recommendation;
 import com.inisw.moard.user.User;
 
 import jakarta.persistence.Column;
@@ -34,7 +35,7 @@ public class UserLog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private Instant timestamp;
+	private ZonedDateTime timestamp;
 	private Integer time;
 	private Float ratio;
 	@Enumerated(EnumType.STRING)
@@ -50,5 +51,9 @@ public class UserLog {
 	@JoinColumn(name = "content_id", nullable = false)
 	@JsonIgnore
 	private Content content;
+
+	@ManyToOne
+	@JoinColumn(name = "recommendation_id")
+	private Recommendation recommendation;
 
 }

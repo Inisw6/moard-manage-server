@@ -1,9 +1,12 @@
 package com.inisw.moard.content;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.inisw.moard.content.searchquery.SearchQuery;
+import com.inisw.moard.searchquery.SearchQuery;
+import com.inisw.moard.user.log.UserLog;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,6 +54,10 @@ public class Content {
 	@Column
 	@Builder.Default
 	private LocalDateTime queryAt = LocalDateTime.now();
+
+	@OneToMany(mappedBy = "content")
+	@Builder.Default
+	private List<UserLog> userLogList = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "search_query_id")

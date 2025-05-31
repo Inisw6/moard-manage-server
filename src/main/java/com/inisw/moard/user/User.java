@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.inisw.moard.recommendation.Recommendation;
 import com.inisw.moard.user.log.UserLog;
 
 import jakarta.persistence.Entity;
@@ -34,5 +35,9 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	@Builder.Default
 	private List<UserLog> userLogList = new ArrayList<UserLog>();
+
+	@OneToMany(mappedBy = "user")
+	@Builder.Default
+	private List<Recommendation> recommendations = new ArrayList<>();
 
 }

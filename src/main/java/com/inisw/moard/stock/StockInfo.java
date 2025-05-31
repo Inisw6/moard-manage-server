@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.inisw.moard.content.searchquery.SearchQuery;
+import com.inisw.moard.searchquery.SearchQuery;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
