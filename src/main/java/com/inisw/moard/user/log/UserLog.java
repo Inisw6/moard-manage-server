@@ -54,6 +54,7 @@ public class UserLog {
 
 	@ManyToOne
 	@JoinColumn(name = "recommendation_id")
+	@JsonIgnore
 	private Recommendation recommendation;
 
 }

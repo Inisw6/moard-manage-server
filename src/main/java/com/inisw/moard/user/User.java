@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inisw.moard.recommendation.Recommendation;
 import com.inisw.moard.user.log.UserLog;
 
@@ -34,10 +35,12 @@ public class User {
 
 	@OneToMany(mappedBy = "user")
 	@Builder.Default
+	@JsonBackReference
 	private List<UserLog> userLogList = new ArrayList<UserLog>();
 
 	@OneToMany(mappedBy = "user")
 	@Builder.Default
+	@JsonBackReference
 	private List<Recommendation> recommendations = new ArrayList<>();
 
 }

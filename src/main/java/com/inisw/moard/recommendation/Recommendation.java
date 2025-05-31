@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inisw.moard.recommendation.content.RecommendationContent;
 import com.inisw.moard.user.User;
 import com.inisw.moard.user.log.UserLog;
@@ -41,14 +42,17 @@ public class Recommendation {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 
 	@OneToMany(mappedBy = "recommendation")
 	@Builder.Default
+	@JsonIgnore
 	private List<RecommendationContent> recommendationContentList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "recommendation")
 	@Builder.Default
+	@JsonIgnore
 	private List<UserLog> userLogs = new ArrayList<>();
 
 }
