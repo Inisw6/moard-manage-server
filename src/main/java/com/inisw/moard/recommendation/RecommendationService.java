@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentService;
 import com.inisw.moard.content.ContentType;
+import com.inisw.moard.recommendation.RecommendationResponseDto.RankedContent;
 import com.inisw.moard.recommendation.content.RecommendationContent;
+import com.inisw.moard.recommendation.content.RecommendationContentRepository;
 import com.inisw.moard.user.User;
 import com.inisw.moard.user.UserRepository;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,11 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class RecommendationService {
 	private final RecommendationRepository recommendationRepository;
 	private final ContentService contentService;
-	private final EntityManager entityManager;
 	private final UserRepository userRepository;
+	private final RecommendationContentRepository recommendationContentRepository;
 
 	@Transactional
-	public List<Content> getRecommendations(String query, Integer limit, UUID userId) {
+	public RecommendationResponseDto getRecommendations(String query, Integer limit, UUID userId) {
 		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
 
 		// 추후 추천 로직 적용 부분
@@ -68,13 +69,28 @@ public class RecommendationService {
 				.content(content)
 				.rank(i + 1)
 				.build();
-			entityManager.persist(recommendationContent);
+			recommendationContent = recommendationContentRepository.save(recommendationContent);
 			recommendationContents.add(recommendationContent);
 		}
 
 		recommendation.setRecommendationContentList(recommendationContents);
-		recommendationRepository.save(recommendation);
+		recommendation = recommendationRepository.save(recommendation);
 
-		return recommendedContentList;
+		// rank 정보를 포함한 콘텐츠 리스트 생성
+		List<RankedContent> rankedContents = recommendationContents.stream()
+			.map(rc -> RankedContent.builder()
+				.content(rc.getContent())
+				.rank(rc.getRank())
+				.build())
+			.collect(Collectors.toList());
+
+		// RecommendationResponseDto 생성
+		return RecommendationResponseDto.builder()
+			.id(recommendation.getId())
+			.query(recommendation.getQuery())
+			.modelVersion(recommendation.getModelVersion())
+			.recommendedAt(recommendation.getRecommendedAt())
+			.contents(rankedContents)
+			.build();
 	}
 }

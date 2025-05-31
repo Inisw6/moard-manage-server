@@ -24,7 +24,7 @@ public class RecommendationController {
 
     @GetMapping
     @Operation(summary = "추천 콘텐츠 조회", description = "주어진 쿼리에 대한 추천 콘텐츠를 반환합니다.")
-    public List<Content> getRecommendations(
+    public RecommendationResponseDto getRecommendations(
         @Parameter(description = "검색 쿼리") @RequestParam String query,
         @Parameter(description = "반환할 콘텐츠 수 (기본값: 6)") @RequestParam(required = false, defaultValue = "6") Integer limit,
         @Parameter(description = "사용자 UUID") @RequestParam UUID userId
