@@ -7,6 +7,7 @@ public record UserLogRequestDto(
 	UUID userId,
 	EventType eventType,
 	Long contentId,
+	Long recommendationId,
 	ZonedDateTime timestamp,
 	Integer time,
 	Float ratio
