@@ -4,14 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentService;
 import com.inisw.moard.content.ContentType;
+import com.inisw.moard.recommendation.content.RecommendationContent;
+import com.inisw.moard.user.User;
+import com.inisw.moard.user.UserRepository;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,8 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class RecommendationService {
 	private final RecommendationRepository recommendationRepository;
 	private final ContentService contentService;
+	private final EntityManager entityManager;
+	private final UserRepository userRepository;
 
-	public List<Content> getRecommendations(String query, Integer limit) {
+	@Transactional
+	public List<Content> getRecommendations(String query, Integer limit, UUID userId) {
 		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
 
 		// 추후 추천 로직 적용 부분
@@ -37,6 +46,34 @@ public class RecommendationService {
 				recommendedContentList.addAll(typeContents.subList(0, Math.min(2, typeContents.size())));
 			}
 		}
+
+		// User 조회
+		User user = userRepository.findByUuid(userId)
+			.orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userId));
+
+		// Recommendation 엔티티 생성 및 저장
+		Recommendation recommendation = Recommendation.builder()
+			.query(query)
+			.modelVersion("v1.0")
+			.user(user)
+			.build();
+		recommendation = recommendationRepository.save(recommendation);
+
+		// RecommendationContent 엔티티 생성 및 저장
+		List<RecommendationContent> recommendationContents = new ArrayList<>();
+		for (int i = 0; i < recommendedContentList.size(); i++) {
+			Content content = recommendedContentList.get(i);
+			RecommendationContent recommendationContent = RecommendationContent.builder()
+				.recommendation(recommendation)
+				.content(content)
+				.rank(i + 1)
+				.build();
+			entityManager.persist(recommendationContent);
+			recommendationContents.add(recommendationContent);
+		}
+
+		recommendation.setRecommendationContentList(recommendationContents);
+		recommendationRepository.save(recommendation);
 
 		return recommendedContentList;
 	}
