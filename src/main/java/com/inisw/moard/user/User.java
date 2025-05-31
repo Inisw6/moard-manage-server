@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inisw.moard.recommendation.Recommendation;
 import com.inisw.moard.user.log.UserLog;
+import com.inisw.moard.user.log.stock.StockLog;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +42,11 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	@Builder.Default
 	@JsonBackReference
-	private List<Recommendation> recommendations = new ArrayList<>();
+	private List<Recommendation> recommendationList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user")
+	@Builder.Default
+	@JsonBackReference
+	private List<StockLog> stockLogList = new ArrayList<>();
 
 }
