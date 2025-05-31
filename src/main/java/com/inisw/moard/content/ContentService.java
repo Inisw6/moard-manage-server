@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.inisw.moard.api.ContentAggregatorService;
-import com.inisw.moard.content.searchquery.SearchQuery;
-import com.inisw.moard.content.searchquery.SearchQueryRepository;
+import com.inisw.moard.searchquery.SearchQuery;
+import com.inisw.moard.searchquery.SearchQueryRepository;
 import com.inisw.moard.stock.StockInfo;
 import com.inisw.moard.stock.StockInfoRepository;
 
@@ -34,61 +34,83 @@ public class ContentService {
 	}
 
 	public List<Content> readContentsByQuery(String query, Integer maxResults) {
-		List<Content> result;
 		StockInfo stockInfo = stockInfoRepository.findByName(query).orElse(null);
-		if (stockInfo == null) {
-			result = contentAggregatorService.aggregate(query, maxResults);
-		} else {
-			SearchQuery searchQuery = searchQueryRepository.findByQuery(query).orElse(null);
-			if (searchQuery == null) {
-				List<Content> contents = contentAggregatorService.aggregate(query, maxResults);
-				searchQuery = SearchQuery.builder()
-					.query(query)
-					.stockInfo(stockInfo)
-					.build();
-				for (Content content : contents) {
-					content.setSearchQuery(searchQuery);
-				}
-				searchQuery = searchQueryRepository.save(searchQuery);
-				result = searchQuery.getContentList();
+
+		List<Content> result = (stockInfo == null)
+			? aggregateFreshContents(query, maxResults)
+			: getOrUpdateContents(query, stockInfo, maxResults);
+
+		return sortAndLimit(result, maxResults);
+	}
+
+	private List<Content> aggregateFreshContents(String query, int maxResults) {
+		return contentAggregatorService.aggregate(query, maxResults);
+	}
+
+	private List<Content> getOrUpdateContents(String query, StockInfo stockInfo, int maxResults) {
+		SearchQuery searchQuery = searchQueryRepository.findByQuery(query).orElse(null);
+
+		if (searchQuery == null) {
+			return createNewSearchQueryWithContents(query, stockInfo, maxResults);
+		}
+
+		if (isExpired(searchQuery)) {
+			return refreshSearchQueryContents(searchQuery, query, maxResults);
+		}
+
+		return searchQuery.getContentList();
+	}
+
+	private List<Content> createNewSearchQueryWithContents(String query, StockInfo stockInfo, int maxResults) {
+		List<Content> contents = contentAggregatorService.aggregate(query, maxResults);
+		SearchQuery searchQuery = SearchQuery.builder()
+			.query(query)
+			.stockInfo(stockInfo)
+			.searchedAt(LocalDateTime.now())
+			.build();
+
+		for (Content content : contents) {
+			content.setSearchQuery(searchQuery);
+		}
+
+		searchQuery = searchQueryRepository.save(searchQuery);
+		return searchQuery.getContentList();
+	}
+
+	private List<Content> refreshSearchQueryContents(SearchQuery searchQuery, String query, int maxResults) {
+		List<Content> newContents = contentAggregatorService.aggregate(query, maxResults);
+		Map<String, Content> existingMap = searchQuery.getContentList().stream()
+			.collect(Collectors.toMap(Content::getUrl, c -> c));
+
+		List<Content> updated = new ArrayList<>();
+		for (Content content : newContents) {
+			Content existing = existingMap.get(content.getUrl());
+			if (existing != null) {
+				existing.setQueryAt(LocalDateTime.now());
+				updated.add(existing);
 			} else {
-				LocalDateTime expireTime = searchQuery.getSearchedAt().plusMinutes(1);
-				if (expireTime.isAfter(LocalDateTime.now())) {
-					result = searchQuery.getContentList();
-				} else {
-					List<Content> contents = contentAggregatorService.aggregate(query, maxResults);
-					Map<String, Content> savedContents = searchQuery.getContentList().stream()
-						.collect(Collectors.toMap(Content::getUrl, c -> c));
-
-					List<Content> updatedContentList = new ArrayList<>();
-
-					for (Content content : contents) {
-						Content existing = savedContents.get(content.getUrl());
-
-						if (existing != null) {
-							existing.setQueryAt(LocalDateTime.now());
-							updatedContentList.add(existing);
-						} else {
-							content.setSearchQuery(searchQuery);
-							updatedContentList.add(content);
-						}
-					}
-
-					searchQuery.getContentList().clear();
-					searchQuery.getContentList().addAll(updatedContentList);
-
-					searchQuery.setSearchedAt(LocalDateTime.now());
-					searchQuery = searchQueryRepository.save(searchQuery);
-				}
-				result = searchQuery.getContentList();
+				content.setSearchQuery(searchQuery);
+				updated.add(content);
 			}
 		}
 
-		result = result.stream()
-			.sorted(Comparator.comparing(Content::getQueryAt, Comparator.nullsLast(Comparator.reverseOrder())))
-			.limit(maxResults * 3)
-			.toList();
+		searchQuery.getContentList().clear();
+		searchQuery.getContentList().addAll(updated);
+		searchQuery.setSearchedAt(LocalDateTime.now());
+		searchQueryRepository.save(searchQuery);
 
-		return result;
+		return searchQuery.getContentList();
 	}
+
+	private boolean isExpired(SearchQuery searchQuery) {
+		return searchQuery.getSearchedAt().plusMinutes(1).isBefore(LocalDateTime.now());
+	}
+
+	private List<Content> sortAndLimit(List<Content> contents, int maxResults) {
+		return contents.stream()
+			.sorted(Comparator.comparing(Content::getQueryAt, Comparator.nullsLast(Comparator.reverseOrder())))
+			.limit(maxResults * 3L)
+			.toList();
+	}
+
 }
