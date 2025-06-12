@@ -21,7 +21,7 @@ public class WebClientConfig {
 	}
 
 	@Bean(name = "youtubeWebClient")
-	public WebClient youtubeWebClient(@Value("${youtube.api.key}") String apiKey) {
+	public WebClient youtubeWebClient() {
 		return WebClient.builder()
 			.baseUrl("https://www.googleapis.com/youtube/v3")
 			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
