@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -23,7 +24,6 @@ public class ContentAggregatorService {
     private final EmbeddingService embeddingService;
     private final ContentRepository contentRepository;
 
-    @Transactional
     public List<Content> aggregate(String query, int maxResults) {
         List<Content> youtubeResultList = youtubeSearchClient.searchVideos(query, maxResults);
         List<Content> blogResultList = naverBlogClient.searchBlogs(query, maxResults, 1, "sim");
@@ -33,8 +33,18 @@ public class ContentAggregatorService {
                 .flatMap(Collection::stream)
                 .toList();
 
-        embeddingService.setEmbeddings(aggregatedContent).block(); // block for simplicity
+        // Filter out contents that already exist in the database
+        List<String> existingUrls = contentRepository.findUrlsByUrlIn(aggregatedContent.stream().map(Content::getUrl).collect(Collectors.toList()));
+        List<Content> newContents = aggregatedContent.stream()
+                .filter(content -> !existingUrls.contains(content.getUrl()))
+                .collect(Collectors.toList());
 
-        return contentRepository.saveAll(aggregatedContent);
+        if (newContents.isEmpty()) {
+            return newContents;
+        }
+
+        embeddingService.setEmbeddings(newContents).block(); // block for simplicity
+
+        return newContents;
     }
 }
