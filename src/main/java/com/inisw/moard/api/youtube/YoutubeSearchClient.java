@@ -1,30 +1,44 @@
 package com.inisw.moard.api.youtube;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inisw.moard.config.YoutubeApiProperties;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentType;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class YoutubeSearchClient {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
-    private final String apiKey;
+    private final List<String> apiKeys;
+    private final AtomicInteger keyIndex = new AtomicInteger(0);
 
-    public YoutubeSearchClient(@Qualifier("youtubeWebClient") WebClient webClient, ObjectMapper objectMapper, @Value("${youtube.api.key}") String apiKey) {
+
+    public YoutubeSearchClient(@Qualifier("youtubeWebClient") WebClient webClient,
+                               ObjectMapper objectMapper,
+                               YoutubeApiProperties youtubeApiProperties) {
         this.webClient = webClient;
         this.objectMapper = objectMapper;
-        this.apiKey = apiKey;
+        this.apiKeys = youtubeApiProperties.getKeys();
+        if (this.apiKeys == null || this.apiKeys.isEmpty() || this.apiKeys.stream().anyMatch(key -> key.contains("${"))) {
+            throw new IllegalArgumentException("YouTube API keys are not configured correctly. Please check your '.env' file and the 'YOUTUBE_API_KEYS' variable.");
+        }
+    }
+
+    private String getNextApiKey() {
+        int index = keyIndex.getAndIncrement() % apiKeys.size();
+        return apiKeys.get(index);
     }
 
     public List<Content> searchVideos(String query, int maxResults) {
+        String apiKey = getNextApiKey();
         String json = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/search")

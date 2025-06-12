@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Convert;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,8 +48,11 @@ public class Content {
 	private ContentType type;
 	@Column(name = "image_url", columnDefinition = "text")
 	private String imageUrl;
+	
+	@Convert(converter = DoubleListConverter.class)
 	@Column(name = "embedding", columnDefinition = "text")
-	private String embedding;
+	private List<Double> embedding;
+
 	@Column(name = "published_at")
 	private LocalDateTime publishedAt;
 	@Column

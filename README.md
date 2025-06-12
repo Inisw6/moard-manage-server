@@ -43,8 +43,8 @@ src/main/java/com/inisw/moard/
 ```env
 NAVER_CLIENT_ID=your-naver-client-id
 NAVER_CLIENT_SECRET=your-naver-client-secret
-# YouTube API 설정
-YOUTUBE_API_KEY=your-youtube-api-key
+# YouTube API 설정 (콤마로 구분하여 여러 키 입력 가능)
+YOUTUBE_API_KEYS=your-youtube-api-key-1,your-youtube-api-key-2
 ```
 
 ### 실행 방법
