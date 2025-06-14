@@ -53,6 +53,7 @@ public class RecommendationService {
 
 		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
 		List<Content> recommendedContentList = new ArrayList<>();
+		List<Double> userEmbedding = null;
 
 		if (user.getUserLogList().size() < 1) {
 			Map<ContentType, List<Content>> contentByType = contentList.stream()
@@ -75,6 +76,8 @@ public class RecommendationService {
 			PredictTopContentsResponse recommendContentIdList = predictService.predictTopContents(
 				predictTopContentsRequest);
 
+			userEmbedding = recommendContentIdList.user_embedding();
+
 			// 1) 예측 결과로부터 ID 리스트 꺼내기
 			List<Long> recommendedIds = recommendContentIdList.content_ids();
 
@@ -94,6 +97,7 @@ public class RecommendationService {
 			.query(query)
 			.modelVersion(modelVersion)
 			.user(user)
+			.embedding(userEmbedding)
 			.build();
 		recommendation = recommendationRepository.save(recommendation);
 
