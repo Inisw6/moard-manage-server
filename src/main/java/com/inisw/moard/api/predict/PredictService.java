@@ -2,13 +2,26 @@ package com.inisw.moard.api.predict;
 
 import com.inisw.moard.api.predict.dto.PredictTopContentsRequest;
 import com.inisw.moard.api.predict.dto.PredictTopContentsResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class PredictService {
 
+    private final WebClient webClient;
+
+    public PredictService(@Qualifier("predictWebClient") WebClient webClient) {
+        this.webClient = webClient;
+    }
+
     public PredictTopContentsResponse predictTopContents(PredictTopContentsRequest request) {
-        // 받은 content_ids가 이미 추천 순서대로 정렬된 리스트이므로 그대로 반환
-        return new PredictTopContentsResponse(request.content_ids());
+        return webClient.post()
+                .uri("/api/v1/predict/top-contents")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(PredictTopContentsResponse.class)
+                .block();
     }
 } 

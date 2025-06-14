@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.inisw.moard.api.predict.PredictService;
+import com.inisw.moard.api.predict.dto.PredictTopContentsRequest;
+import com.inisw.moard.api.predict.dto.PredictTopContentsResponse;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.content.ContentService;
 import com.inisw.moard.content.ContentType;
@@ -28,6 +33,7 @@ public class RecommendationService {
 	private final ContentService contentService;
 	private final UserRepository userRepository;
 	private final RecommendationContentRepository recommendationContentRepository;
+	private final PredictService predictService;
 
 	private String modelVersion = "random";
 
@@ -41,26 +47,47 @@ public class RecommendationService {
 
 	@Transactional
 	public RecommendationResponseDto getRecommendations(String query, Integer limit, UUID userId) {
-		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
-
-		// 추후 추천 로직 적용 부분
-		Map<ContentType, List<Content>> contentByType = contentList.stream()
-			.collect(Collectors.groupingBy(Content::getType));
-
-		List<Content> recommendedContentList = new ArrayList<>();
-
-		// 각 타입별로 2개씩 랜덤하게 선택
-		for (ContentType type : ContentType.values()) {
-			List<Content> typeContents = contentByType.getOrDefault(type, new ArrayList<>());
-			if (!typeContents.isEmpty()) {
-				Collections.shuffle(typeContents);
-				recommendedContentList.addAll(typeContents.subList(0, Math.min(2, typeContents.size())));
-			}
-		}
-
 		// User 조회
 		User user = userRepository.findByUuid(userId)
 			.orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userId));
+
+		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
+		List<Content> recommendedContentList = new ArrayList<>();
+
+		if (user.getUserLogList().size() < 1) {
+			Map<ContentType, List<Content>> contentByType = contentList.stream()
+				.collect(Collectors.groupingBy(Content::getType));
+
+			// 각 타입별로 2개씩 랜덤하게 선택
+			for (ContentType type : ContentType.values()) {
+				List<Content> typeContents = contentByType.getOrDefault(type, new ArrayList<>());
+				if (!typeContents.isEmpty()) {
+					Collections.shuffle(typeContents);
+					recommendedContentList.addAll(typeContents.subList(0, Math.min(2, typeContents.size())));
+				}
+			}
+		} else {
+			List<Long> contentIds = contentList.stream()
+				.map(Content::getId)
+				.collect(Collectors.toList());
+			PredictTopContentsRequest predictTopContentsRequest = new PredictTopContentsRequest(userId, contentIds);
+
+			PredictTopContentsResponse recommendContentIdList = predictService.predictTopContents(
+				predictTopContentsRequest);
+
+			// 1) 예측 결과로부터 ID 리스트 꺼내기
+			List<Long> recommendedIds = recommendContentIdList.content_ids();
+
+			// 2) 원래 Content 리스트를 ID → Content 맵으로 변환
+			Map<Long, Content> contentMap = contentList.stream()
+				.collect(Collectors.toMap(Content::getId, Function.identity()));
+
+			// 3) 맵에서 ID 순서대로 꺼내서 recommendedContentList에 추가
+			recommendedContentList = recommendedIds.stream()
+				.map(contentMap::get)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		}
 
 		// Recommendation 엔티티 생성 및 저장
 		Recommendation recommendation = Recommendation.builder()
