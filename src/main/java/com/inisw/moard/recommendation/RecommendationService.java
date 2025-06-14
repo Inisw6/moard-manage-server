@@ -29,6 +29,10 @@ public class RecommendationService {
 	private final UserRepository userRepository;
 	private final RecommendationContentRepository recommendationContentRepository;
 
+	public List<Recommendation> getRecommendationList() {
+		return recommendationRepository.findAll();
+	}
+
 	@Transactional
 	public RecommendationResponseDto getRecommendations(String query, Integer limit, UUID userId) {
 		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);

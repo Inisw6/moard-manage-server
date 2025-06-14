@@ -39,6 +39,8 @@ public class Recommendation {
 	private LocalDateTime recommendedAt = LocalDateTime.now();
 	private String modelVersion;
 	private String query;
+	@Builder.Default
+	private Boolean flag = false;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
