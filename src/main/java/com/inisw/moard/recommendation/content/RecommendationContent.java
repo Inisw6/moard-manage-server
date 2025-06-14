@@ -34,5 +34,5 @@ public class RecommendationContent {
 	@JoinColumn(name = "content_id")
 	private Content content;
 
-	private Integer rank;
+	private Integer ranks;
 }
