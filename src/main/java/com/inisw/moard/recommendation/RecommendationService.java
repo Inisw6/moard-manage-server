@@ -29,8 +29,14 @@ public class RecommendationService {
 	private final UserRepository userRepository;
 	private final RecommendationContentRepository recommendationContentRepository;
 
+	private String modelVersion = "random";
+
 	public List<Recommendation> getRecommendationList() {
 		return recommendationRepository.findAll();
+	}
+
+	public void setModelVersion(String modelVersion) {
+		this.modelVersion = modelVersion;
 	}
 
 	@Transactional
@@ -59,7 +65,7 @@ public class RecommendationService {
 		// Recommendation 엔티티 생성 및 저장
 		Recommendation recommendation = Recommendation.builder()
 			.query(query)
-			.modelVersion("v1.0")
+			.modelVersion(modelVersion)
 			.user(user)
 			.build();
 		recommendation = recommendationRepository.save(recommendation);
@@ -71,7 +77,7 @@ public class RecommendationService {
 			RecommendationContent recommendationContent = RecommendationContent.builder()
 				.recommendation(recommendation)
 				.content(content)
-				.rank(i + 1)
+				.ranks(i + 1)
 				.build();
 			recommendationContent = recommendationContentRepository.save(recommendationContent);
 			recommendationContents.add(recommendationContent);
@@ -84,7 +90,7 @@ public class RecommendationService {
 		List<RankedContent> rankedContents = recommendationContents.stream()
 			.map(rc -> RankedContent.builder()
 				.content(rc.getContent())
-				.rank(rc.getRank())
+				.rank(rc.getRanks())
 				.build())
 			.collect(Collectors.toList());
 
