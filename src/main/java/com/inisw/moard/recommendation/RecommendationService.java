@@ -10,7 +10,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.inisw.moard.api.predict.PredictService;
 import com.inisw.moard.api.predict.dto.PredictTopContentsRequest;
@@ -45,7 +44,6 @@ public class RecommendationService {
 		this.modelVersion = modelVersion;
 	}
 
-	@Transactional
 	public RecommendationResponseDto getRecommendations(String query, Integer limit, UUID userId) {
 		// User 조회
 		User user = userRepository.findByUuid(userId)
@@ -71,6 +69,7 @@ public class RecommendationService {
 			List<Long> contentIds = contentList.stream()
 				.map(Content::getId)
 				.collect(Collectors.toList());
+
 			PredictTopContentsRequest predictTopContentsRequest = new PredictTopContentsRequest(userId, contentIds);
 
 			PredictTopContentsResponse recommendContentIdList = predictService.predictTopContents(
