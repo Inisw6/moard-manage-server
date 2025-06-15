@@ -112,6 +112,6 @@ public class ContentService {
 	}
 
 	private boolean isExpired(SearchQuery searchQuery) {
-		return searchQuery.getSearchedAt().plusMinutes(1).isBefore(LocalDateTime.now());
+		return searchQuery.getSearchedAt().plusMinutes(2400).isBefore(LocalDateTime.now());
 	}
 }
