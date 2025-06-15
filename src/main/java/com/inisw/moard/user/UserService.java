@@ -1,5 +1,6 @@
 package com.inisw.moard.user;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -20,5 +21,9 @@ public class UserService {
 
 	public User findUserById(UUID uuid) {
 		return userRepository.findByUuid(uuid).orElse(null);
+	}
+
+	public List<User> findAllUserList() {
+		return userRepository.findAll();
 	}
 }

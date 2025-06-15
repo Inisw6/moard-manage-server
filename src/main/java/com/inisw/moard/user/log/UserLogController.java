@@ -1,6 +1,7 @@
 package com.inisw.moard.user.log;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,5 +19,10 @@ public class UserLogController {
 	@PostMapping
 	public UserLog createUserLog(@RequestBody UserLogRequestDto userLog) {
 		return userLogService.createUserLog(userLog);
+	}
+
+	@GetMapping("/count")
+	public Long getUserLogCount() {
+		return userLogService.getUserLogCount();
 	}
 }
