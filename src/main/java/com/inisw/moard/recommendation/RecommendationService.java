@@ -34,14 +34,8 @@ public class RecommendationService {
 	private final RecommendationContentRepository recommendationContentRepository;
 	private final PredictService predictService;
 
-	private String modelVersion = "random";
-
 	public List<Recommendation> getRecommendationList() {
 		return recommendationRepository.findAll();
-	}
-
-	public void setModelVersion(String modelVersion) {
-		this.modelVersion = modelVersion;
 	}
 
 	public RecommendationResponseDto getRecommendations(String query, Integer limit, UUID userId) {
@@ -53,7 +47,10 @@ public class RecommendationService {
 		List<Content> recommendedContentList = new ArrayList<>();
 		List<Double> userEmbedding = null;
 
+		String modelName = null;
+
 		if (user.getUserLogList().size() < 1) {
+			modelName = "random";
 			Map<ContentType, List<Content>> contentByType = contentList.stream()
 				.collect(Collectors.groupingBy(Content::getType));
 
@@ -72,13 +69,14 @@ public class RecommendationService {
 
 			PredictTopContentsRequest predictTopContentsRequest = new PredictTopContentsRequest(userId, contentIds);
 
-			PredictTopContentsResponse recommendContentIdList = predictService.predictTopContents(
+			PredictTopContentsResponse predictTopContentsResponse = predictService.predictTopContents(
 				predictTopContentsRequest);
 
-			userEmbedding = recommendContentIdList.user_embedding();
+			modelName = predictTopContentsResponse.model_name();
+			userEmbedding = predictTopContentsResponse.user_embedding();
 
 			// 1) 예측 결과로부터 ID 리스트 꺼내기
-			List<Long> recommendedIds = recommendContentIdList.content_ids();
+			List<Long> recommendedIds = predictTopContentsResponse.content_ids();
 
 			// 2) 원래 Content 리스트를 ID → Content 맵으로 변환
 			Map<Long, Content> contentMap = contentList.stream()
@@ -94,7 +92,7 @@ public class RecommendationService {
 		// Recommendation 엔티티 생성 및 저장
 		Recommendation recommendation = Recommendation.builder()
 			.query(query)
-			.modelVersion(modelVersion)
+			.modelVersion(modelName)
 			.user(user)
 			.embedding(userEmbedding)
 			.build();
