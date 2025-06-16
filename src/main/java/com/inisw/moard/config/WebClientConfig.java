@@ -38,7 +38,7 @@ public class WebClientConfig {
 			.build();
 
 		return WebClient.builder()
-			.baseUrl("http://localhost:8000")
+			.baseUrl("http://api:8000")
 			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.exchangeStrategies(strategies)
 			.build();
@@ -47,7 +47,7 @@ public class WebClientConfig {
 	@Bean(name = "predictWebClient")
 	public WebClient predictWebClient() {
 		return WebClient.builder()
-			.baseUrl("http://localhost:8000")
+			.baseUrl("http://api:8000")
 			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 			.build();
 	}
