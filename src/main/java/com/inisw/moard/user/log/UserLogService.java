@@ -34,4 +34,8 @@ public class UserLogService {
 			.build();
 		return userLogRepository.save(userLog1);
 	}
+
+	public Long getUserLogCount() {
+		return userLogRepository.countTodayNative();
+	}
 }

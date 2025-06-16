@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inisw.moard.searchquery.SearchQuery;
 import com.inisw.moard.user.log.UserLog;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -47,8 +49,12 @@ public class Content {
 	private ContentType type;
 	@Column(name = "image_url", columnDefinition = "text")
 	private String imageUrl;
+
+	@Convert(converter = DoubleListConverter.class)
 	@Column(name = "embedding", columnDefinition = "text")
-	private String embedding;
+	@JsonIgnore
+	private List<Double> embedding;
+
 	@Column(name = "published_at")
 	private LocalDateTime publishedAt;
 	@Column

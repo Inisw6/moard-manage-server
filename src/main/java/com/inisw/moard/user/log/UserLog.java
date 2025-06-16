@@ -2,6 +2,7 @@ package com.inisw.moard.user.log;
 
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inisw.moard.content.Content;
 import com.inisw.moard.recommendation.Recommendation;
@@ -45,6 +46,7 @@ public class UserLog {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	@JsonIgnore
+	@JsonBackReference
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

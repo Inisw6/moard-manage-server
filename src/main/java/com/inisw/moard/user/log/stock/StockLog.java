@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inisw.moard.user.User;
 
 import jakarta.persistence.Column;
@@ -38,6 +39,7 @@ public class StockLog {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonBackReference
 	private User user;
 
 	@CreationTimestamp

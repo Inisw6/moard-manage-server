@@ -1,5 +1,6 @@
 package com.inisw.moard.recommendation;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +23,11 @@ public class RecommendationController {
 	private final RecommendationService recommendationService;
 
 	@GetMapping
+	public List<Recommendation> getRecommendations() {
+		return recommendationService.getRecommendationList();
+	}
+
+	@GetMapping("/content")
 	@Operation(summary = "추천 콘텐츠 조회", description = "주어진 쿼리에 대한 추천 콘텐츠를 반환합니다.")
 	public RecommendationResponseDto getRecommendations(
 		@Parameter(description = "검색 쿼리") @RequestParam String query,
@@ -30,4 +36,5 @@ public class RecommendationController {
 	) {
 		return recommendationService.getRecommendations(query, limit, userId);
 	}
+
 } 
