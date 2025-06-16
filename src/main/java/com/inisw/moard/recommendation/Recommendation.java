@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inisw.moard.content.DoubleListConverter;
 import com.inisw.moard.recommendation.content.RecommendationContent;
@@ -54,6 +55,7 @@ public class Recommendation {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	@JsonIgnore
+	@JsonBackReference
 	private User user;
 
 	@OneToMany(mappedBy = "recommendation")
