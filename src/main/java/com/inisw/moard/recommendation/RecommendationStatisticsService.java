@@ -1,4 +1,4 @@
-package com.inisw.moard.recommendation.service;
+package com.inisw.moard.recommendation;
 
 import java.util.List;
 import java.util.Map;
@@ -7,9 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.inisw.moard.recommendation.Recommendation;
-import com.inisw.moard.recommendation.RecommendationRepository;
-import com.inisw.moard.recommendation.dto.ModelStatisticsDto;
 import com.inisw.moard.user.log.EventType;
 
 import lombok.RequiredArgsConstructor;
