@@ -33,7 +33,12 @@ public class ContentService {
 
 		if (stockInfo == null) {
 			// It is not a stock, just aggregate
-			return aggregateFreshContents(query, maxResults);
+			StockInfo stocKInfo = StockInfo.builder()
+				.name(query)
+				.industryDetail(" ")
+				.build();
+			stockInfo = stockInfoRepository.save(stocKInfo);
+			// return aggregateFreshContents(query, maxResults);
 		}
 
 		String stockName = stockInfo.getName().replaceAll("\\s+", "");
