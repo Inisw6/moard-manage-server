@@ -49,7 +49,10 @@ public class RecommendationService {
 
 		String modelName = null;
 
-		if (user.getUserLogList().size() < 1) {
+		// 사용자의 로그가 100개 미만이거나, 추천 관련 로그가 없거나, 모든 로그의 Recommendation이 null인 경우
+		if (user.getUserLogList().size() < 100 ||
+			user.getUserLogList().isEmpty() ||
+			user.getUserLogList().stream().allMatch(log -> log.getRecommendation() == null)) {
 			modelName = "random";
 			Map<ContentType, List<Content>> contentByType = contentList.stream()
 				.collect(Collectors.groupingBy(Content::getType));
