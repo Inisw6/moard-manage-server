@@ -14,6 +14,23 @@
 - Docker & Docker Compose
 - Gradle
 
+## 환경 변수 설정
+프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 다음 환경 변수들을 설정해주세요:
+
+```env
+# 데이터베이스 설정
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/moard?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+SPRING_DATASOURCE_USERNAME=moard
+SPRING_DATASOURCE_PASSWORD=moard1234
+
+# Naver API 설정
+NAVER_CLIENT_ID=your-naver-client-id
+NAVER_CLIENT_SECRET=your-naver-client-secret
+
+# YouTube API 설정 (콤마로 구분하여 여러 키 입력 가능)
+YOUTUBE_API_KEYS=your-youtube-api-key-1,your-youtube-api-key-2
+```
+
 ## 실행방법
 
 ### 로컬 개발 환경
