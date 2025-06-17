@@ -43,6 +43,10 @@ public class RecommendationService {
 		User user = userRepository.findByUuid(userId)
 			.orElseThrow(() -> new IllegalArgumentException("User not found with UUID: " + userId));
 
+		Recommendation latestRecommendation = user.getRecommendationList().stream()
+			.max((r1, r2) -> r1.getRecommendedAt().compareTo(r2.getRecommendedAt()))
+			.orElse(null);
+
 		List<Content> contentList = contentService.readContentsByQuery(query, limit * 3);
 		List<Content> recommendedContentList = new ArrayList<>();
 		List<Double> userEmbedding = null;
@@ -50,9 +54,9 @@ public class RecommendationService {
 		String modelName = null;
 
 		// 사용자의 로그가 100개 미만이거나, 추천 관련 로그가 없거나, 모든 로그의 Recommendation이 null인 경우
-		if (user.getUserLogList().size() < 100 ||
+		if (user.getUserLogList().size() < 3 ||
 			user.getUserLogList().isEmpty() ||
-			user.getUserLogList().stream().allMatch(log -> log.getRecommendation() == null)) {
+			latestRecommendation.getUserLogs().isEmpty()) {
 			modelName = "random";
 			Map<ContentType, List<Content>> contentByType = contentList.stream()
 				.collect(Collectors.groupingBy(Content::getType));
