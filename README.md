@@ -4,6 +4,9 @@
 이 프로젝트는 강화 학습 기반 추천시스템인 Moard에서 콘텐츠, 로그 관리를 위한 Spring Boot 기반 RESTful API 서버입니다. 
 사용자 행동 데이터를 수집하고, 다양한 소스의 콘텐츠를 통합하여 개인화된 추천을 제공합니다.
 
+## ERD
+![erd_diagram](https://github.com/user-attachments/assets/e0100097-6644-4a34-96f3-28a550426205)
+
 ## 환경
 - Java 17
 - Spring Boot 3.4.5
